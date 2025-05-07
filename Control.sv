@@ -1,7 +1,7 @@
 // control decoder
 module Control #(parameter opwidth = 3, mcodebits = 4)(
   input [mcodebits-1:0] instr,    // subset of machine code (any width you need)
-  output logic RegDst, Branch, 
+  output logic RegDst, Branch, How_high,
      MemtoReg, MemWrite, ALUSrc, RegWrite,
   output logic[opwidth-1:0] ALUOp);	   // for up to 8 ALU operations
 
@@ -9,6 +9,7 @@ always_comb begin
 // defaults
   RegDst 	=   'b0;   // 1: not in place  just leave 0
   Branch 	=   'b0;   // 1: branch (jump)
+  How_high  =   'b0;   // 
   MemWrite  =	'b0;   // 1: store to memory
   ALUSrc 	=	'b0;   // 1: immediate  0: second reg file output
   RegWrite  =	'b1;   // 0: for store or no op  1: most other operations 
@@ -24,6 +25,10 @@ case(instr)    // override defaults with exceptions
   'b00010:  begin				  // load
 			   MemtoReg = 'b1;    // 
              end
+  'b11100,'b11101,'b11110,'b1111: begin			      // branch
+			 Branch = 'b1;
+			 How_high = instr[1:0];
+           end
 // ...
 endcase
 

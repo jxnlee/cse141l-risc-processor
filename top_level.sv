@@ -24,6 +24,7 @@ module top_level(
   wire[A-1:0] alu_cmd;
   wire[8:0]   mach_code;          // machine code
   wire[2:0] rd_addrA, rd_adrB;    // address pointers to reg_file
+  logic[2:0] how_high;
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
      pc1 (.reset            ,
@@ -46,6 +47,7 @@ module top_level(
   Control ctl1(.instr(),
   .RegDst  (), 
   .Branch  (relj)  , 
+  .How_high(how_high) ,
   .MemWrite , 
   .ALUSrc   , 
   .RegWrite   ,     
@@ -79,7 +81,7 @@ module top_level(
              .clk           ,
 			 .wr_en  (MemWrite), // stores
 			 .addr   (datA),
-             .dat_out());
+             .dat_out());        // FIX THIS!  No Connects
 
 // registered flags from ALU
   always_ff @(posedge clk) begin
