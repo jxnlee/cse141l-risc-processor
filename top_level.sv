@@ -1,32 +1,32 @@
 // sample top level design
 module top_level(
-  input        clk, reset, req, 
-  output logic done);
-  parameter D = 12,             // program counter width
-    A = 3;             		  // ALU command bit width
-  wire[D-1:0] target, 			  // jump 
+  input          clk, reset, req, 
+  output logic   done);
+  parameter pc_width = 12,             // program counter width
+            alu_cmd_width = 3;             		  // ALU command bit width
+  wire[pc_width-1:0] target, 			  // jump 
               prog_ctr;
   wire        RegWrite;
   wire[7:0]   datA,datB,		  // from RegFile
               muxB, 
-			  rslt,               // alu output
+			        rslt,               // alu output
               immed;
-  logic sc_in,   				  // shift/carry out from/to ALU
-   		pariQ,              	  // registered parity flag from ALU
-		zeroQ;                    // registered zero flag from ALU 
-  wire  relj;                     // from control to PC; relative jump enable
+  logic sc_in,                  // shift/carry out from/to ALU
+   		  pariQ,              	  // registered parity flag from ALU
+		    zeroQ;                  // registered zero flag from ALU 
+  wire  relj;                   // from control to PC; relative jump enable
   wire  pari,
         zero,
-		sc_clr,
-		sc_en,
+		    sc_clr,
+		    sc_en,
         MemWrite,
         ALUSrc;		              // immediate switch
-  wire[A-1:0] alu_cmd;
-  wire[8:0]   mach_code;          // machine code
-  wire[2:0] rd_addrA, rd_adrB;    // address pointers to reg_file
-  logic[2:0] how_high;
+  wire[alu_cmd_width-1:0] alu_cmd;
+  wire[8:0]               mach_code;        // machine code
+  wire[2:0]               rd_addrA, rd_adrB;// address pointers to reg_file
+  logic[2:0]              how_high;
 // fetch subassembly
-  PC #(.D(D)) 					  // D sets program counter width
+  PC #(.width(pc_width)) 					  // D sets program counter width
      pc1 (.reset            ,
          .clk              ,
 		 .reljump_en (relj),
@@ -35,7 +35,7 @@ module top_level(
 		 .prog_ctr          );
 
 // lookup table to facilitate jumps/branches
-  PC_LUT #(.D(D))
+  PC_LUT #(.width(pc_width))
     pl1 (.addr  (how_high),
          .target          );   
 
@@ -70,18 +70,18 @@ module top_level(
   assign muxB = ALUSrc? immed : datB;
 
   alu alu1(.alu_cmd(),
-         .inA    (datA),
-		 .inB    (muxB),
-		 .sc_i   (sc),   // output from sc register
-		 .rslt       ,
-		 .sc_o   (sc_o), // input to sc register
-		 .pari  );  
+    .inA    (datA),
+    .inB    (muxB),
+    .sc_i   (sc),   // output from sc register
+    .rslt       ,
+    .sc_o   (sc_o), // input to sc register
+    .pari  );  
 
   dat_mem dm1(.dat_in(datB)  ,  // from reg_file
-             .clk           ,
-			 .wr_en  (MemWrite), // stores
-			 .addr   (datA),
-             .dat_out());        // FIX THIS!  No Connects
+    .clk           ,
+		.wr_en  (MemWrite), // stores
+		.addr   (datA),
+    .dat_out());        // FIX THIS!  No Connects
 
 // registered flags from ALU
   always_ff @(posedge clk) begin

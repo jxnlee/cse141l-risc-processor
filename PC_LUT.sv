@@ -1,6 +1,6 @@
-module PC_LUT #(parameter D=12)(
+module PC_LUT #(parameter width = 12)(
   input       [ 1:0] addr,	   // target 4 values
-  output logic[D-1:0] target);
+  output logic[width-1:0] target);
 
   always_comb case(addr)
     0: target = -5;   // go back 5 spaces
@@ -27,4 +27,4 @@ endmodule
 	  0000_0000_0000     + 0
 
 
-  */
+*/
