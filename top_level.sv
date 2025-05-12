@@ -1,32 +1,40 @@
 // sample top level design
 module top_level(
-  input          clk, reset, req, 
-  output logic   done);
-  parameter pc_width = 12,             // program counter width
-            alu_cmd_width = 3;             		  // ALU command bit width
-  wire[pc_width-1:0] target, 			  // jump 
-              prog_ctr;
-  wire        RegWrite;
-  wire[7:0]   datA,datB,		  // from RegFile
-              muxB, 
-			        rslt,               // alu output
-              immed;
+  input         clk,
+                reset,
+                req, 
+  output logic  done
+  );
+
+  parameter PC_WIDTH = 12,          // program counter width
+            ALU_CMD_WIDTH = 4;      // ALU command bit width
+  wire [PC_WIDTH-1:0]   target,     // jump 
+                        prog_ctr;   // program counter
+  wire                  RegWrite;
+  wire [7:0]            data_accum,       // data from RegFile
+                        data_op,		// data from RegFile
+                        muxB, 
+			            result,               // alu output
+                        immed;
   logic sc_in,                  // shift/carry out from/to ALU
-   		  pariQ,              	  // registered parity flag from ALU
-		    zeroQ;                  // registered zero flag from ALU 
+   		pariQ,              	  // registered parity flag from ALU
+		zeroQ;                  // registered zero flag from ALU 
   wire  relj;                   // from control to PC; relative jump enable
   wire  pari,
         zero,
-		    sc_clr,
-		    sc_en,
+		sc_clr,
+		sc_en,
         MemWrite,
         ALUSrc;		              // immediate switch
-  wire[alu_cmd_width-1:0] alu_cmd;
-  wire[8:0]               mach_code;        // machine code
-  wire[2:0]               rd_addrA, rd_adrB;// address pointers to reg_file
-  logic[2:0]              how_high;
+  wire  ld_immed,
+        shift_dir;
+    wire [2:0]  shift_amnt;
+  wire  [ALU_CMD_WIDTH-1:0] alu_cmd;
+  wire  [8:0]               mach_code;        //  9 bit machine code
+  wire  [3:0]               reg_addr;// address pointers to reg_file
+  logic [2:0]               how_high;
 // fetch subassembly
-  PC #(.width(pc_width)) 					  // D sets program counter width
+  PC #(.width(PC_WIDTH)) 					  // D sets program counter width
      pc1 (.reset            ,
          .clk              ,
 		 .reljump_en (relj),
@@ -35,9 +43,10 @@ module top_level(
 		 .prog_ctr          );
 
 // lookup table to facilitate jumps/branches
-  PC_LUT #(.width(pc_width))
-    pl1 (.addr  (how_high),
-         .target          );   
+
+  //PC_LUT #(.width(PC_WIDTH))
+  //  pl1 (.addr  (how_high),
+  //       .target          );   
 
 // contains machine code
   instr_ROM ir1(.prog_ctr,
@@ -54,9 +63,11 @@ module top_level(
   .MemtoReg(),
   .ALUOp());
 
-  assign rd_addrA = mach_code[2:0];
-  assign rd_addrB = mach_code[5:3];
-  assign alu_cmd  = mach_code[8:6];
+  assign reg_addr = mach_code[3:0];
+  assign alu_cmd  = mach_code[7:4];
+  assign ld_immed = mach_code[8];
+  assign immed = mach_code[7:0];
+  
 
   reg_file #(.pw(3)) rf1(.dat_in(regfile_dat),	   // loads, most ops
               .clk         ,
@@ -73,7 +84,7 @@ module top_level(
     .inA    (datA),
     .inB    (muxB),
     .sc_i   (sc),   // output from sc register
-    .rslt       ,
+    .result       ,
     .sc_o   (sc_o), // input to sc register
     .pari  );  
 
