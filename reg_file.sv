@@ -6,15 +6,15 @@ module reg_file #(parameter pw=4)(
   input      wr_en,           // write enable
   input[pw:0] wr_addr,		  // write address pointer
               rd_addrA,		  // read address pointers
-			  rd_addrB,
+	//rd_addrB, if we always read from accumulator (R0), then no need for second read port
   output logic[7:0] datA_out, // read data
-                    datB_out);
+                    acc_out);
 
   logic[7:0] core[2**pw];    // 2-dim array  8 wide  16 deep
 
 // reads are combinational
   assign datA_out = rd_addrA? core[rd_addrA] : 'b0;
-  assign datB_out = core[rd_addrB];
+  assign acc_out = core[0];
 
 // writes are sequential (clocked)
   always_ff @(posedge clk)
