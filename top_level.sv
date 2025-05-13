@@ -45,7 +45,7 @@ module top_level(
     .mach_code  (mach_code) // output: machine code
   );
 
-  assign opcode = mach_code[7:4]
+  assign opcode = mach_code[7:4];
   assign oprAddr = mach_code[3:0];
   assign ldImmed = mach_code[8];
   assign immed = mach_code[7:0];
