@@ -26,17 +26,15 @@ logic [2:0] shift_amount;
     case (alu_cmd)
       4'b0000:  // shift instructions // add 2 8-bit unsigned; automatically makes carry-out
       begin
-        if (shift_dir)  // shift right
+        if (shift_dir)  // arithmetic shift right
         begin
-          {result, cout}            = {cin, inAccum};     // single shift right and assign shift carry out to LSB
-          result                    = result >> shift_amount;   // shfit by remaining amount specified in inOp[2:0]
-          result[7:7-shift_amount]  = {shift_amount{cin}};// set MSBs to shift carry in
+          result = inAccum >>> shift_amount + 1;
+          cout = inAccum[0];
         end
         else            // shift left
         begin
-          {cout, result}            = {inAccum, cin};     // single left shift and assign shift carry out to MSB
-          result                    = result << shift_amount;   // shift by remaining amount specified in inOp[2:0]
-          result[shift_amount-1:0]  = {shift_amount{cin}};// set LSBs to shift carry in
+          result = inAccum << shift_amount + 1;
+          cout = inAccum[7];
         end
       end
       4'b0001, 4'b0010, 4'b0011: // branch instructions
