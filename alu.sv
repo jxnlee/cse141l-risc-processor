@@ -1,13 +1,13 @@
 // combinational -- no clock
 
 module alu (
-    input [3:0] alu_cmd,    // ALU instructions
+    input [3:0] aluOp,    // ALU instructions
 
     // 8-bit wide data path
     input [7:0] inAcc,    // accumulator (ALU output)
                 inOpr,       // operand (ALU input)
     input       cin,  // shift_carry in
-                ldImmed;
+                ldImmed,
     output logic [7:0]  result,
     output logic        cout, // shift_carry out
                         pari,       // reduction XOR (output)
@@ -27,7 +27,7 @@ logic [2:0] shift_amount;
     if (ldImmed) result = inOpr;
     else
     begin
-      case (alu_cmd)
+      case (aluOp)
         4'b0000:  // shift instructions // add 2 8-bit unsigned; automatically makes carry-out
         begin
           if (shift_dir)  // arithmetic shift right

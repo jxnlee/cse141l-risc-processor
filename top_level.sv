@@ -78,7 +78,7 @@ module top_level(
 
   reg_file #(.pw(4)) rf1
   (
-    .dat_in     (regWrite_data),	   // loads, most ops
+    .data_in     (regWrite_data),	   // loads, most ops
     .clk        (clk),
     .wr_en      (RegWrite),
     .rd_addrOpr (oprAddr),

@@ -38,11 +38,11 @@ always_comb begin
         MemWrite = 'b1;
         RegWrite = 'b0;
       end
-      4'b0110:  // push in
+      //4'b0110:;  // push in
       4'b0111:  // pop out
         RegDst = 'b1;
-      4'b1000, 4'b1001, 4'b1010, 4'b1011, 4'b1100, 4'b1101: // bitwise AND, OR, XOR, NOT; add & sub
-      4'b1110:  // TBD
+      //4'b1000, 4'b1001, 4'b1010, 4'b1011, 4'b1100, 4'b1101:; // bitwise AND, OR, XOR, NOT; add & sub
+      //4'b1110:;  // TBD
       4'b1111:  // done flag
         RegWrite = 'b0;
     endcase
