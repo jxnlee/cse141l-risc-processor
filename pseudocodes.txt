@@ -1,0 +1,41 @@
+Program 1
+int2float --Write a program that converts a 16-bit two’s complement (8 bits integer + 8 bits fractional into 16-bit IEEE floating
+point format, i.e.,
+short X; // but fractional, not integer!
+float Y = X; // actually, equivalent C code would need a special float_binary_16 format command
+The operand, X, is found in memory locations 1 (most significant word of X) and 0 (least significant word of X). The result, Y,
+shall be written into locations 3 (MSW of Y) and 2 (LSW of Y)
+
+Program steps: 
+// Load input from memory (2's complement fixed-point 8.8)
+X_high = MEM[1]
+X_low  = MEM[0]
+X = (X_high << 8) | X_low  // 16-bit fixed-point number
+
+// Step 1: Sign
+if (X < 0) {
+    SIGN = 1
+    X = -X      // Take absolute value (2's complement)
+} else {
+    SIGN = 0
+}
+
+// Step 2: Normalize (find position of first '1' from left)
+// For fixed-point 8.8, normalize to [1.xxxxx] form
+shift = 0
+while (X & 0x8000) == 0 {  // Find leading 1
+    X = X << 1
+    shift += 1
+}
+
+// Step 3: Build exponent and mantissa
+// Bias for 5-bit exponent is 15
+exponent = 15 + (8 - shift)  // Account for fixed-point binary point at 8
+mantissa = (X >> 6) & 0x03FF // Top 10 bits after shifting out implicit 1
+
+// Assemble 16-bit float format: [sign | exponent (5 bits) | mantissa (10 bits)]
+Y = (SIGN << 15) | (exponent << 10) | mantissa
+
+// Step 4: Store result into memory
+MEM[3] = (Y >> 8) & 0xFF  // MSB
+MEM[2] = Y & 0xFF         // LSB
