@@ -46,7 +46,7 @@ def parse_instruction(instruction):
         imm = int(parts[1])
         if not (0 <= imm < 256):
             raise ValueError("Immediate out of range for Ldi (0-255)")
-        return f"1_{imm:08b}"
+        return f"1{imm:08b}"
 
     elif instr_type == "S":
         # SHL/ASR: 0 + 5 bits opcode + 3 bits immediate (immediate is 1-8, encoded as 0-7)
@@ -56,7 +56,7 @@ def parse_instruction(instruction):
         if not (1 <= imm <= 8):
             raise ValueError("Immediate out of range for shift (1-8)")
         imm_enc = imm - 1  # encode as 0-7
-        return f"0_{info['opcode']}_{imm_enc:03b}"
+        return f"0{info['opcode']}{imm_enc:03b}"
 
     elif instr_type == "R":
         # R-type: 0 + 4 bits opcode + 4 bits register
@@ -68,7 +68,7 @@ def parse_instruction(instruction):
         reg = int(reg_str)
         if not (0 <= reg < 16):
             raise ValueError("Register out of range (R0-R15)")
-        return f"0_{info['opcode']}_{reg:04b}"
+        return f"0{info['opcode']}{reg:04b}"
 
     else:
         raise ValueError(f"Unknown instruction type: {instr_type}")

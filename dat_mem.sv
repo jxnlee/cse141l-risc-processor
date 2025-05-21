@@ -4,8 +4,8 @@ module dat_mem (
     input        [7:0] data_in,
     input              clk,
     input              wr_en,   // write enable
-
     input        [7:0] addr,    // address pointer
+    input              start,  
 
     output logic [7:0] data_out
 );
@@ -17,7 +17,7 @@ module dat_mem (
 
   // writes are sequential (clocked) -- occur on stores or pushes 
   always_ff @(posedge clk)
-    if (wr_en)  // wr_en usually = 0; = 1 		
+    if (wr_en && !start)  // wr_en usually = 0; = 1 
       core[addr] <= data_in;
 
 endmodule

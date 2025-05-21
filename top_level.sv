@@ -2,7 +2,7 @@
 module top_level(
   input         clk,
                 reset,
-                req, 
+                start, 
   output logic  done
   );
 
@@ -106,6 +106,7 @@ module top_level(
     .clk      (clk),  // clock
 		.wr_en    (MemWrite), // stores
 		.addr     (oprData),  // from reg_file
+    .start    (start),
     .data_out (regWrite_data)
   ); // write data to regfile
 
