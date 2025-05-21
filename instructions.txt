@@ -1,0 +1,29 @@
+Ldi 8
+Ldi 255
+Ldi 0
+
+Shl 1
+Shl 8
+Asr 2
+Asr 7
+
+Add R1
+Sub R2
+And R3
+Or R4
+Xor R5
+Not R0
+B R6
+Beqz R7
+Bltz R8
+Ldr R9
+Str R10
+Pin R11
+Pout R12
+Tbd R13
+Done R14
+
+Ldi 256
+Shl 0
+Asr 9
+Add R16
